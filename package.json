@@ -1,0 +1,46 @@
+{
+  "name": "mnem",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Open source LLM memory engine. Obsidian-vault compatible. Your agents' data in markdown files, not a vendor's database.",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "turbo run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.11",
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.4.2",
+    "tsup": "^8.3.5",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artik0din/mnem.git"
+  },
+  "homepage": "https://github.com/artik0din/mnem#readme",
+  "bugs": {
+    "url": "https://github.com/artik0din/mnem/issues"
+  },
+  "author": "Kevin Valfin",
+  "license": "MIT"
+}

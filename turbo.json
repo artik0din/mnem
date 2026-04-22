@@ -1,0 +1,38 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["tsconfig.base.json", ".eslintrc.cjs", ".prettierrc.json"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "inputs": ["src/**", "tsconfig.json", "tsup.config.ts", "package.json"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig.json", "package.json"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "inputs": ["src/**", "test/**", "tests/**", "vitest.config.ts", "package.json"]
+    },
+    "lint": {
+      "inputs": ["src/**", ".eslintrc.cjs", "package.json"]
+    },
+    "lint:fix": {
+      "cache": false,
+      "inputs": ["src/**", ".eslintrc.cjs", "package.json"]
+    },
+    "prettier": {
+      "inputs": ["src/**", ".prettierrc.json", "package.json"]
+    },
+    "prettier:fix": {
+      "cache": false,
+      "inputs": ["src/**", ".prettierrc.json", "package.json"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
