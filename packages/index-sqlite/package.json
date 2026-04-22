@@ -41,21 +41,23 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "lint": "eslint src"
   },
   "dependencies": {
-    "@mnem/core": "workspace:*"
+    "@mnem/core": "workspace:*",
+    "better-sqlite3": "^11.7.0"
   },
   "peerDependencies": {
-    "better-sqlite3": "^11.0.0"
+    "sqlite-vec": "^0.1.0"
   },
   "peerDependenciesMeta": {
-    "better-sqlite3": {
-      "optional": false
+    "sqlite-vec": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
     "tsup": "^8.3.5",
     "typescript": "^5.7.3",
     "vitest": "^2.1.8"
