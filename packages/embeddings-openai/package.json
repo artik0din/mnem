@@ -1,6 +1,6 @@
 {
   "name": "@mnem/embeddings-openai",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "OpenAI embeddings provider for Mnem.",
   "keywords": [
     "mnem",

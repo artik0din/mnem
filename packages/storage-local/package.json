@@ -1,6 +1,6 @@
 {
   "name": "@mnem/storage-local",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Local filesystem storage adapter for Mnem.",
   "keywords": [
     "mnem",
