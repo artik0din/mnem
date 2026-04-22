@@ -40,7 +40,7 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "lint": "eslint src"
   },
   "dependencies": {
@@ -48,6 +48,7 @@
     "@aws-sdk/client-s3": "^3.721.0"
   },
   "devDependencies": {
+    "aws-sdk-client-mock": "^4.1.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.3",
     "vitest": "^2.1.8"
