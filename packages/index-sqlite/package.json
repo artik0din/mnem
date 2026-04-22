@@ -1,6 +1,6 @@
 {
   "name": "@mnem/index-sqlite",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Embedded SQLite index adapter for Mnem with full-text and vector search.",
   "keywords": [
     "mnem",

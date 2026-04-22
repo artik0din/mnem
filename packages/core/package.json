@@ -1,6 +1,6 @@
 {
   "name": "@mnem/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Core API for Mnem, a markdown-based persistent memory engine for LLM agents.",
   "keywords": [
     "llm",
