@@ -10,10 +10,8 @@ Store your agents' memory in a folder of linked markdown files. Inspectable, edi
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![pnpm](https://img.shields.io/badge/pnpm-9.15-F69220?logo=pnpm&logoColor=white)](https://pnpm.io)
-[![Turborepo](https://img.shields.io/badge/Turborepo-2.3-EF4444?logo=turborepo&logoColor=white)](https://turbo.build)
 
-[Install](#install) · [Quick start](#quick-start) · [Packages](#packages) · [Architecture](#architecture) · [Roadmap](#roadmap)
+[Install](#install) · [Quick start](#quick-start) · [Packages](#packages) · [Agent adapters](#agent-adapters) · [Architecture](#architecture)
 
 </div>
 
@@ -23,31 +21,32 @@ Store your agents' memory in a folder of linked markdown files. Inspectable, edi
 
 Mnem gives LLM agents a persistent memory that lives as **plain markdown files** rather than inside an opaque vector database.
 
-- Store notes on disk, in S3, or in git.
+- Store notes on disk or in S3-compatible object storage.
 - Link notes together with standard wikilinks `[[like this]]`.
 - Index them for full-text, semantic, and graph search.
-- Expose them to any LLM as first-class tools.
-- Open the same folder in any markdown editor. Your agent's memory is just files.
+- Expose them to any LLM: OpenAI function calling, Anthropic tool use, or as a Claude Skill.
+- Open the same folder in Obsidian, VS Code, or any markdown editor. Your agent's memory is just files.
 
 ## Why file-based memory
 
-Most existing memory tools for agents store data in proprietary vector databases. That optimizes retrieval but gives up inspectability, portability, and auditability. When the vendor goes down, when a client asks to see what you remember about them, or when a human needs to correct a false memory, the files-on-disk model wins.
+Most memory tools for agents store data in proprietary vector databases. That optimizes retrieval but gives up inspectability, portability and auditability. When the vendor goes down, when a client asks to see what you remember about them, or when a human needs to correct a false memory, the files-on-disk model wins.
 
 Mnem keeps the retrieval quality (full-text + semantic + graph search) while keeping the data in a format anyone can read.
 
-| Dimension              | Vector-DB services | Mnem                                  |
-| ---------------------- | ------------------ | ------------------------------------- |
-| Storage format         | Proprietary blobs  | Plain markdown files with frontmatter |
-| Inspectable by a human | No                 | Yes                                   |
-| Edit memory by hand    | No                 | Yes (any text editor)                 |
-| Version control        | Snapshot only      | Works natively with git               |
-| Self-host              | Usually complex    | `pnpm add @mnem/core` and go          |
-| Vendor lock-in         | Strong             | None                                  |
+| Dimension               | Vector-DB services | Mnem                                  |
+| ----------------------- | ------------------ | ------------------------------------- |
+| Storage format          | Proprietary blobs  | Plain markdown files with frontmatter |
+| Inspectable by a human  | No                 | Yes                                   |
+| Edit memory by hand     | No                 | Yes (any text editor)                 |
+| Version control         | Snapshot only      | Works natively with git               |
+| Self-host               | Usually complex    | `pnpm add @mnem/core` and go          |
+| Obsidian/VS Code compat | No                 | Yes                                   |
+| Vendor lock-in          | Strong             | None                                  |
 
 ## Install
 
 ```bash
-pnpm add @mnem/core @mnem/storage-local
+pnpm add @mnem/core @mnem/storage-local @mnem/index-sqlite
 ```
 
 ## Quick start
@@ -55,9 +54,11 @@ pnpm add @mnem/core @mnem/storage-local
 ```typescript
 import { createVault } from '@mnem/core'
 import { LocalStorage } from '@mnem/storage-local'
+import { SqliteIndex } from '@mnem/index-sqlite'
 
 const vault = await createVault({
   storage: new LocalStorage({ root: './my-vault' }),
+  index: new SqliteIndex({ path: './my-vault/.mnem/index.sqlite' }),
 })
 
 await vault.writeNote({
@@ -71,18 +72,66 @@ const backlinks = await vault.getBacklinks({ path: 'notes/world.md' })
 
 ## Packages
 
-| Package                   | Purpose                                                         | Status |
-| ------------------------- | --------------------------------------------------------------- | ------ |
-| `@mnem/core`              | Vault API, contracts, in-memory adapters                        | v0.0   |
-| `@mnem/storage-local`     | Filesystem storage adapter                                      | v0.0   |
-| `@mnem/storage-s3`        | S3-compatible storage adapter (AWS, R2, Scaleway, Minio, …)     | stub   |
-| `@mnem/index-sqlite`      | Embedded SQLite index with FTS5 + `sqlite-vec`                  | stub   |
-| `@mnem/index-postgres`    | PostgreSQL index with `tsvector` and `pgvector`                 | stub   |
-| `@mnem/embeddings-openai` | OpenAI embeddings provider                                      | stub   |
-| `@mnem/tools`             | Tool format adapters (OpenAI function calling, Anthropic tools) | stub   |
-| `@mnem/cli`               | `mnem` command-line tool                                        | stub   |
+| Package                   | Purpose                                                         | Status     |
+| ------------------------- | --------------------------------------------------------------- | ---------- |
+| `@mnem/core`              | Vault API, contracts, in-memory adapters                        | v0.1 ready |
+| `@mnem/storage-local`     | Filesystem storage adapter                                      | v0.1 ready |
+| `@mnem/storage-s3`        | S3-compatible storage (AWS, R2, Scaleway, Minio, Backblaze)     | v0.1 ready |
+| `@mnem/index-sqlite`      | Embedded SQLite index with FTS5 and optional `sqlite-vec`       | v0.1 ready |
+| `@mnem/index-postgres`    | PostgreSQL index with `tsvector` and `pgvector`                 | v0.1 ready |
+| `@mnem/embeddings-openai` | OpenAI embeddings provider with batching and retries            | v0.1 ready |
+| `@mnem/tools`             | OpenAI / Anthropic / Claude Skill adapters + runtime dispatcher | v0.1 ready |
+| `@mnem/cli`               | `mnem` command-line tool                                        | v0.1 ready |
 
 All packages are published under the MIT license.
+
+## Agent adapters
+
+`@mnem/tools` exposes a Mnem vault to an agent in three formats:
+
+### OpenAI function calling
+
+```typescript
+import { executeToolCall, toOpenAITools } from '@mnem/tools'
+
+const tools = toOpenAITools(vault, { restrictToPath: 'clients/alice/' })
+const res = await openai.chat.completions.create({ model: 'gpt-4o', tools, messages })
+for (const call of res.choices[0].message.tool_calls ?? []) {
+  const out = await executeToolCall(vault, {
+    name: call.function.name,
+    arguments: JSON.parse(call.function.arguments),
+  })
+}
+```
+
+### Anthropic tool use
+
+```typescript
+import { toAnthropicTools } from '@mnem/tools'
+
+const tools = toAnthropicTools(vault)
+const res = await anthropic.messages.create({ model: 'claude-sonnet-4-5', tools, messages })
+```
+
+### Claude Skill (for Claude Code, Claude.ai, Agent SDK)
+
+```typescript
+import { toClaudeSkill } from '@mnem/tools'
+
+await toClaudeSkill(vault, {
+  outputDir: '/Users/me/.claude/skills/mnem-memory',
+  skillName: 'mnem-memory',
+})
+```
+
+Or from the CLI:
+
+```bash
+mnem init
+mnem export-skill ~/.claude/skills/mnem-memory
+```
+
+The generated directory follows Anthropic's Skill format: `SKILL.md` with YAML frontmatter and a short body, `scripts/*.sh` that shell out to the `mnem` CLI, and `resources/api.md` with the full JSON schema for each tool. Claude loads metadata at session start, reads `SKILL.md` when the skill is triggered, and only opens `resources/api.md` when it needs the exact parameters — this is the progressive-disclosure pattern Anthropic recommends.
 
 ## Architecture
 
@@ -105,7 +154,7 @@ All packages are published under the MIT license.
 └──────┬───────┘      └──────────────┘
        │
        ▼
-  fs | S3 | git
+  fs | S3
 ```
 
 The `Vault` is the stable public API. Storage, indexing, and embeddings are each abstracted behind a small interface so consumers can plug in adapters that match their infrastructure.
@@ -116,6 +165,9 @@ A Mnem vault is a directory of markdown files. Wikilinks resolve relative to the
 
 ```
 my-vault/
+├── .mnem/
+│   ├── config.yml
+│   └── index.sqlite
 ├── clients/
 │   └── alice/
 │       ├── profile.md
@@ -143,7 +195,7 @@ First diagnosis notes. References [[knowledge/programs]] and [[knowledge/princip
 ## Requirements
 
 - Node.js 20 or later
-- pnpm 9 or later (monorepo)
+- pnpm 9 or later (for the monorepo)
 
 ## Development
 
@@ -155,16 +207,6 @@ pnpm build
 ```
 
 Every pull request must pass typecheck, lint, prettier, test, and build before merging.
-
-## Roadmap
-
-| Version | Focus                                                                 | Target timeframe |
-| ------- | --------------------------------------------------------------------- | ---------------- |
-| v0.1    | Full implementations of all v0 adapter stubs, compaction strategies   | 4–5 weeks        |
-| v0.2    | MCP server adapter, git storage, additional embedding providers       | +4 weeks         |
-| v1.0    | Framework adapters, filesystem watch mode, canvas support, benchmarks | +2 months        |
-
-See [`docs/`](./docs) for the detailed PRD and design documents (coming soon).
 
 ## Contributing
 
