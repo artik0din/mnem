@@ -107,12 +107,8 @@ describe('PostgresIndex', () => {
     const queries = fake.calls.map((c) => c.query)
     expect(queries.some((q) => q.startsWith('INSERT INTO "public"."mnem_notes"'))).toBe(true)
     expect(queries.some((q) => q.startsWith('DELETE FROM "public"."mnem_links"'))).toBe(true)
-    expect(
-      queries.filter((q) => q.startsWith('INSERT INTO "public"."mnem_links"')),
-    ).toHaveLength(2)
-    expect(
-      queries.some((q) => q.startsWith('INSERT INTO "public"."mnem_embeddings"')),
-    ).toBe(true)
+    expect(queries.filter((q) => q.startsWith('INSERT INTO "public"."mnem_links"'))).toHaveLength(2)
+    expect(queries.some((q) => q.startsWith('INSERT INTO "public"."mnem_embeddings"'))).toBe(true)
   })
 
   it('deletes the embedding when note upserted without one', async () => {
@@ -125,9 +121,7 @@ describe('PostgresIndex', () => {
       links: [],
     })
     const queries = fake.calls.map((c) => c.query)
-    expect(
-      queries.some((q) => q.startsWith('DELETE FROM "public"."mnem_embeddings"')),
-    ).toBe(true)
+    expect(queries.some((q) => q.startsWith('DELETE FROM "public"."mnem_embeddings"'))).toBe(true)
   })
 
   it('searchFullText returns rows with numeric score', async () => {
@@ -142,10 +136,9 @@ describe('PostgresIndex', () => {
 
   it('searchSemantic returns rows when pgvector is available', async () => {
     const idx = await makeIndex()
-    fake.setResponse(
-      /SELECT e\.path AS path[\s\S]*FROM "public"\."mnem_embeddings"/,
-      [{ path: 'a.md', score: 0.9, snippet: 'hi' }],
-    )
+    fake.setResponse(/SELECT e\.path AS path[\s\S]*FROM "public"\."mnem_embeddings"/, [
+      { path: 'a.md', score: 0.9, snippet: 'hi' },
+    ])
     const results = await idx.searchSemantic([0.1, 0.2, 0.3], 5)
     expect(results).toEqual([{ path: 'a.md', score: 0.9, snippet: 'hi' }])
     await idx.close()

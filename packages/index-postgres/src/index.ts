@@ -6,7 +6,10 @@ import type { IndexAdapter, IndexedNote, SearchResult } from '@mnem/core'
  * Matches the surface exposed by the `postgres` package.
  */
 export interface PostgresSqlClient {
-  (strings: TemplateStringsArray, ...values: unknown[]): Promise<unknown[]> & {
+  (
+    strings: TemplateStringsArray,
+    ...values: unknown[]
+  ): Promise<unknown[]> & {
     // postgres lib returns a tagged result shape; we only read array-style rows.
   }
   unsafe: (query: string, params?: unknown[]) => Promise<unknown[]>
@@ -56,9 +59,7 @@ export class PostgresIndex implements IndexAdapter {
       this.sql = postgres(options.connectionString) as unknown as PostgresSqlClient
       this.ownsClient = true
     } else {
-      throw new Error(
-        '[@mnem/index-postgres] either `connectionString` or `sql` must be provided',
-      )
+      throw new Error('[@mnem/index-postgres] either `connectionString` or `sql` must be provided')
     }
     if (options.skipMigrations !== true) {
       this.initializePromise = this.initialize()
@@ -84,9 +85,7 @@ export class PostgresIndex implements IndexAdapter {
       await this.sql.unsafe(`CREATE EXTENSION IF NOT EXISTS vector`)
       this.vectorEnabled = true
     } catch {
-      logWarn(
-        'pgvector extension is not available; semantic search will return empty results.',
-      )
+      logWarn('pgvector extension is not available; semantic search will return empty results.')
       this.vectorEnabled = false
     }
     await this.sql.unsafe(`CREATE SCHEMA IF NOT EXISTS "${this.schema}"`)
@@ -157,10 +156,10 @@ export class PostgresIndex implements IndexAdapter {
     )
     await this.sql.unsafe(`DELETE FROM ${this.linksTable} WHERE from_path = $1`, [note.path])
     for (const target of note.links) {
-      await this.sql.unsafe(
-        `INSERT INTO ${this.linksTable} (from_path, to_path) VALUES ($1, $2)`,
-        [note.path, target],
-      )
+      await this.sql.unsafe(`INSERT INTO ${this.linksTable} (from_path, to_path) VALUES ($1, $2)`, [
+        note.path,
+        target,
+      ])
     }
     if (note.embedding !== undefined) {
       if (this.vectorEnabled) {

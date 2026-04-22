@@ -25,9 +25,7 @@ describe('OpenAIEmbeddings', () => {
   })
 
   it('rejects an unknown model', () => {
-    expect(() => new OpenAIEmbeddings({ apiKey: 'x', model: 'bogus' })).toThrow(
-      /Unknown model/,
-    )
+    expect(() => new OpenAIEmbeddings({ apiKey: 'x', model: 'bogus' })).toThrow(/Unknown model/)
   })
 
   it('returns an empty array for an empty input list without calling OpenAI', async () => {

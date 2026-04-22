@@ -134,9 +134,7 @@ export class S3Storage implements StorageAdapter {
 
   async exists(path: string): Promise<boolean> {
     try {
-      await this.client.send(
-        new HeadObjectCommand({ Bucket: this.bucket, Key: this.toKey(path) }),
-      )
+      await this.client.send(new HeadObjectCommand({ Bucket: this.bucket, Key: this.toKey(path) }))
       return true
     } catch (err) {
       if (isNotFound(err)) return false
@@ -187,8 +185,7 @@ function isNotFound(err: unknown): boolean {
   if (typeof err !== 'object' || err === null) return false
   const name = (err as { name?: unknown }).name
   const code = (err as { Code?: unknown }).Code
-  const status =
-    (err as { $metadata?: { httpStatusCode?: unknown } }).$metadata?.httpStatusCode
+  const status = (err as { $metadata?: { httpStatusCode?: unknown } }).$metadata?.httpStatusCode
   return (
     name === 'NoSuchKey' ||
     name === 'NotFound' ||

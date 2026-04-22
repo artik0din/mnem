@@ -13,4 +13,11 @@ export type { ExportSkillOptions } from './commands/export-skill.js'
 export { runTool } from './commands/tool.js'
 export type { ToolOptions } from './commands/tool.js'
 export type { VaultConfig } from './config.js'
-export { DEFAULT_CONFIG, findVaultRoot, parseConfig, readConfig, serializeConfig, writeConfig } from './config.js'
+export {
+  DEFAULT_CONFIG,
+  findVaultRoot,
+  parseConfig,
+  readConfig,
+  serializeConfig,
+  writeConfig,
+} from './config.js'

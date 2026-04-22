@@ -34,10 +34,7 @@ export async function runCompact(options: CompactOptions): Promise<CompactReport
   try {
     for await (const key of storage.list(source)) {
       if (!key.endsWith('.md')) continue
-      const full = join(
-        config.storage.root !== undefined ? config.storage.root : root,
-        key,
-      )
+      const full = join(config.storage.root !== undefined ? config.storage.root : root, key)
       const s = await stat(full)
       if (s.mtimeMs >= threshold) {
         skipped += 1

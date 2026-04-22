@@ -10,9 +10,7 @@ export interface ExportSkillOptions {
   readonly cliCommand?: string
 }
 
-export async function runExportSkill(
-  options: ExportSkillOptions,
-): Promise<ClaudeSkillArtifacts> {
+export async function runExportSkill(options: ExportSkillOptions): Promise<ClaudeSkillArtifacts> {
   const { vault } = await loadVaultFrom(options.startDir)
   try {
     return await toClaudeSkill(vault, {

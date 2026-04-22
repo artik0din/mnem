@@ -54,9 +54,7 @@ export class SqliteIndex implements IndexAdapter {
       ),
       deleteNote: this.db.prepare(`DELETE FROM notes WHERE path = ?`),
       deleteLinks: this.db.prepare(`DELETE FROM links WHERE from_path = ?`),
-      insertLink: this.db.prepare(
-        `INSERT INTO links (from_path, to_path) VALUES (?, ?)`,
-      ),
+      insertLink: this.db.prepare(`INSERT INTO links (from_path, to_path) VALUES (?, ?)`),
       upsertEmbedding: this.db.prepare(
         `INSERT INTO embeddings (path, vector, dimension)
          VALUES (@path, @vector, @dimension)
@@ -66,9 +64,7 @@ export class SqliteIndex implements IndexAdapter {
       ),
       deleteEmbedding: this.db.prepare(`DELETE FROM embeddings WHERE path = ?`),
       deleteFts: this.db.prepare(`DELETE FROM notes_fts WHERE path = ?`),
-      insertFts: this.db.prepare(
-        `INSERT INTO notes_fts (path, content) VALUES (?, ?)`,
-      ),
+      insertFts: this.db.prepare(`INSERT INTO notes_fts (path, content) VALUES (?, ?)`),
       searchFts: this.db.prepare(
         `SELECT path, bm25(notes_fts) AS rank, snippet(notes_fts, 1, '', '', '…', 16) AS snippet
          FROM notes_fts
@@ -211,9 +207,9 @@ export class SqliteIndex implements IndexAdapter {
 
   /** Read the stored frontmatter for a note, for convenience. */
   getFrontmatter(path: string): NoteFrontmatter | undefined {
-    const row = this.db
-      .prepare(`SELECT frontmatter FROM notes WHERE path = ?`)
-      .get(path) as { frontmatter: string } | undefined
+    const row = this.db.prepare(`SELECT frontmatter FROM notes WHERE path = ?`).get(path) as
+      | { frontmatter: string }
+      | undefined
     if (row === undefined) return undefined
     return JSON.parse(row.frontmatter) as NoteFrontmatter
   }

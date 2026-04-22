@@ -133,8 +133,7 @@ const TOOL_SPECS: readonly ToolSpec[] = [
   },
   {
     operation: 'search_semantic',
-    description:
-      'Semantic similarity search over the vault. Requires an embedding provider.',
+    description: 'Semantic similarity search over the vault. Requires an embedding provider.',
     parameters: objectSchema(
       {
         query: { type: 'string' },
@@ -266,9 +265,7 @@ export async function executeToolCall(
         assertPathAllowed(path, options)
         const frontmatter = optionalFrontmatter(args.frontmatter)
         await vault.writeNote(
-          frontmatter === undefined
-            ? { path, content }
-            : { path, content, frontmatter },
+          frontmatter === undefined ? { path, content } : { path, content, frontmatter },
         )
         return { content: `ok: wrote ${path}` }
       }
@@ -366,9 +363,7 @@ function optionalFrontmatter(value: unknown): Record<string, unknown> | undefine
 function assertPathAllowed(path: string, options: ToolAdapterOptions): void {
   if (options.restrictToPath === undefined) return
   if (!path.startsWith(options.restrictToPath)) {
-    throw new Error(
-      `Path "${path}" is outside the allowed scope "${options.restrictToPath}"`,
-    )
+    throw new Error(`Path "${path}" is outside the allowed scope "${options.restrictToPath}"`)
   }
 }
 

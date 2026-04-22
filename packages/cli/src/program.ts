@@ -90,9 +90,7 @@ export function buildProgram(io: ProgramIo = defaultIo): Command {
 
   program
     .command('compact')
-    .description(
-      'Archive notes older than a threshold into an archive/ folder (archive strategy).',
-    )
+    .description('Archive notes older than a threshold into an archive/ folder (archive strategy).')
     .option('--source <prefix>', 'source prefix to archive from', 'conversations/')
     .option('--target <prefix>', 'archive destination prefix', 'archive/')
     .option(
@@ -103,12 +101,7 @@ export function buildProgram(io: ProgramIo = defaultIo): Command {
     )
     .option('--dry-run', 'report what would change without writing', false)
     .action(
-      async (opts: {
-        source: string
-        target: string
-        olderThanDays: number
-        dryRun: boolean
-      }) => {
+      async (opts: { source: string; target: string; olderThanDays: number; dryRun: boolean }) => {
         const report = await runCompact({
           startDir: io.cwd(),
           sourcePrefix: opts.source,
