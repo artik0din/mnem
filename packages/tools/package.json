@@ -1,0 +1,55 @@
+{
+  "name": "@mnem/tools",
+  "version": "0.0.0",
+  "description": "Tool format adapters (OpenAI, Anthropic) for exposing a Mnem vault to LLM agents.",
+  "keywords": [
+    "mnem",
+    "tools",
+    "function-calling",
+    "openai",
+    "anthropic",
+    "llm-memory"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artik0din/mnem.git",
+    "directory": "packages/tools"
+  },
+  "bugs": "https://github.com/artik0din/mnem/issues",
+  "homepage": "https://github.com/artik0din/mnem#readme",
+  "author": "Kevin Valfin",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@mnem/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}
