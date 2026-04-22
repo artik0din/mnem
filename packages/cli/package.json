@@ -1,0 +1,58 @@
+{
+  "name": "@mnem/cli",
+  "version": "0.0.0",
+  "description": "Command-line interface for inspecting and maintaining a Mnem vault.",
+  "keywords": [
+    "mnem",
+    "cli",
+    "llm-memory",
+    "obsidian",
+    "markdown"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artik0din/mnem.git",
+    "directory": "packages/cli"
+  },
+  "bugs": "https://github.com/artik0din/mnem/issues",
+  "homepage": "https://github.com/artik0din/mnem#readme",
+  "author": "Kevin Valfin",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "mnem": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@mnem/core": "workspace:*",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}
