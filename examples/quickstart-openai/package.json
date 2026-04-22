@@ -1,0 +1,19 @@
+{
+  "name": "example-quickstart-openai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mnem/core": "workspace:*",
+    "@mnem/storage-local": "workspace:*",
+    "@mnem/embeddings-openai": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
