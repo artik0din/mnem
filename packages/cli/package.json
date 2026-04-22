@@ -43,14 +43,26 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "lint": "eslint src"
   },
   "dependencies": {
     "@mnem/core": "workspace:*",
+    "@mnem/index-sqlite": "workspace:*",
+    "@mnem/storage-local": "workspace:*",
+    "@mnem/tools": "workspace:*",
     "commander": "^12.1.0"
   },
+  "peerDependencies": {
+    "@mnem/embeddings-openai": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@mnem/embeddings-openai": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@mnem/embeddings-openai": "workspace:*",
     "tsup": "^8.3.5",
     "typescript": "^5.7.3",
     "vitest": "^2.1.8"

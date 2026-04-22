@@ -85,10 +85,22 @@ importers:
       '@mnem/core':
         specifier: workspace:*
         version: link:../core
+      '@mnem/index-sqlite':
+        specifier: workspace:*
+        version: link:../index-sqlite
+      '@mnem/storage-local':
+        specifier: workspace:*
+        version: link:../storage-local
+      '@mnem/tools':
+        specifier: workspace:*
+        version: link:../tools
       commander:
         specifier: ^12.1.0
         version: 12.1.0
     devDependencies:
+      '@mnem/embeddings-openai':
+        specifier: workspace:*
+        version: link:../embeddings-openai
       tsup:
         specifier: ^8.3.5
         version: 8.5.1(postcss@8.5.10)(tsx@4.21.0)(typescript@5.9.3)
