@@ -1,0 +1,60 @@
+{
+  "name": "@mnem/core",
+  "version": "0.0.0",
+  "description": "Core API for Mnem, a markdown-based persistent memory engine for LLM agents.",
+  "keywords": [
+    "llm",
+    "agent",
+    "memory",
+    "ai",
+    "ai-memory",
+    "obsidian",
+    "markdown",
+    "rag",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artik0din/mnem.git",
+    "directory": "packages/core"
+  },
+  "bugs": "https://github.com/artik0din/mnem/issues",
+  "homepage": "https://github.com/artik0din/mnem#readme",
+  "author": "Kevin Valfin",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.8",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}
