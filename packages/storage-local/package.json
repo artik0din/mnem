@@ -1,0 +1,54 @@
+{
+  "name": "@mnem/storage-local",
+  "version": "0.0.0",
+  "description": "Local filesystem storage adapter for Mnem.",
+  "keywords": [
+    "mnem",
+    "storage",
+    "filesystem",
+    "local",
+    "llm-memory"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artik0din/mnem.git",
+    "directory": "packages/storage-local"
+  },
+  "bugs": "https://github.com/artik0din/mnem/issues",
+  "homepage": "https://github.com/artik0din/mnem#readme",
+  "author": "Kevin Valfin",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@mnem/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}
