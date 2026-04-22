@@ -1,6 +1,6 @@
 {
   "name": "@mnem/tools",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Tool format adapters (OpenAI, Anthropic) for exposing a Mnem vault to LLM agents.",
   "keywords": [
     "mnem",
