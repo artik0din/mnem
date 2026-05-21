@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@mnem/core": "workspace:*",
-    "@mnem/storage-local": "workspace:*",
-    "@mnem/embeddings-openai": "workspace:*"
+    "@mnem/embeddings-openai": "workspace:*",
+    "@mnem/storage-local": "workspace:*"
   },
   "devDependencies": {
-    "tsx": "^4.19.2",
+    "tsx": "^4.22.3",
     "typescript": "^5.7.3"
   }
 }

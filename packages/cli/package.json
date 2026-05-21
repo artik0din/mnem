@@ -51,7 +51,7 @@
     "@mnem/index-sqlite": "workspace:*",
     "@mnem/storage-local": "workspace:*",
     "@mnem/tools": "workspace:*",
-    "commander": "^12.1.0"
+    "commander": "^14.0.3"
   },
   "optionalDependencies": {
     "@mnem/embeddings-openai": "workspace:*"
@@ -59,6 +59,6 @@
   "devDependencies": {
     "tsup": "^8.3.5",
     "typescript": "^5.7.3",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.7"
   }
 }

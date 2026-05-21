@@ -116,7 +116,9 @@ class VaultImpl implements Vault {
     ]
     while (queue.length > 0) {
       const current = queue.shift()
+      /* v8 ignore start -- while guard ensures queue is non-empty; shift() cannot return undefined here */
       if (current === undefined) break
+      /* v8 ignore stop */
       if (visited.has(current.path)) continue
       visited.add(current.path)
       if (current.remaining <= 0) continue

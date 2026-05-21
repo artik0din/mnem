@@ -49,6 +49,10 @@ describe('extractWikilinks', () => {
   it('ignores empty targets', () => {
     expect(extractWikilinks('[[]] text')).toEqual([])
   })
+
+  it('ignores whitespace-only targets', () => {
+    expect(extractWikilinks('[[   ]] and [[foo]]')).toEqual(['foo'])
+  })
 })
 
 describe('validateNotePath', () => {
@@ -147,6 +151,23 @@ describe('MemoryIndex', () => {
   it('returns empty outgoing for unknown note', async () => {
     const idx = new MemoryIndex()
     expect(await idx.getOutgoingLinks('missing.md')).toEqual([])
+  })
+
+  it('excludes notes that do not link to the target from backlinks', async () => {
+    const idx = new MemoryIndex()
+    await idx.upsertNote({
+      path: 'a.md',
+      content: 'links to b',
+      frontmatter: {},
+      links: ['b.md'],
+    })
+    await idx.upsertNote({
+      path: 'c.md',
+      content: 'links nowhere relevant',
+      frontmatter: {},
+      links: ['d.md'],
+    })
+    expect(await idx.getBacklinks('b.md')).toEqual(['a.md'])
   })
 
   it('full-text search matches content', async () => {
@@ -358,6 +379,14 @@ describe('Vault', () => {
     await vault.writeNote({ path: 'b.md', content: 'see [[c]]' })
     const reached = await vault.searchGraph({ startNote: 'a.md' })
     expect(reached).toEqual(['b.md'])
+  })
+
+  it('graph search handles cycles without revisiting nodes', async () => {
+    const vault = await createVault({ storage: new MemoryStorage() })
+    await vault.writeNote({ path: 'a.md', content: 'see [[b]]' })
+    await vault.writeNote({ path: 'b.md', content: 'see [[a]]' })
+    const reached = await vault.searchGraph({ startNote: 'a.md', depth: 5 })
+    expect(reached.sort()).toEqual(['b.md'])
   })
 
   it('close shuts down the index', async () => {
