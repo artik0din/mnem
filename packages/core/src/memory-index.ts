@@ -80,8 +80,10 @@ function cosineSimilarity(a: readonly number[], b: readonly number[]): number {
   let normA = 0
   let normB = 0
   for (let i = 0; i < a.length; i++) {
+    /* v8 ignore start -- loop bound i < a.length guarantees defined elements; ?? 0 only satisfies noUncheckedIndexedAccess */
     const ai = a[i] ?? 0
     const bi = b[i] ?? 0
+    /* v8 ignore stop */
     dot += ai * bi
     normA += ai * ai
     normB += bi * bi
