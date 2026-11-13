@@ -2,107 +2,54 @@
 
 **TOUJOURS PARLER EN FRANÇAIS** côté conversation. Code, commits, commentaires techniques, noms publics : en anglais (projet OSS).
 
-## Context Management
+## Produit
 
-Quand le contexte dépasse 80 %, arrête-toi, résume l'état courant, lance un `/compact`. Ne lis jamais plus de 3 fichiers à la suite sans vérifier le contexte. Pour une exploration large, utilise un sub-agent.
+Mnem est un moteur de mémoire persistante pour agents LLM (lib TypeScript MIT). Souvenirs en markdown liés (compatibles vault Obsidian), pas en base vectorielle propriétaire. Référence : `README.md`.
 
-## Vision projet
+## Stack
 
-Mnem est un moteur de mémoire persistante pour agents LLM, livré sous forme de lib TypeScript OSS sous licence MIT. Les souvenirs sont stockés comme des fichiers markdown liés entre eux (compatibles avec le format vault Obsidian), pas dans une base vectorielle propriétaire.
+Node.js 20+, pnpm 9.15.4 (`packageManager` racine), Turborepo, tsup (ESM + CJS + `.d.ts`), Vitest, Changesets + GitHub Actions, ESLint (`.eslintrc.cjs`) + Prettier (`.prettierrc.json`).
 
-Document de référence : `README.md`. PRD complet dans le repo Globolead : `/Users/artik0din/Documents/globolead/docs/v2/PRD-MNEM.md`.
+## Arborescence
 
-## Stack & Preferences
+- `packages/core` — API vault ; seuils couverture dans `packages/core/vitest.config.ts`
+- `packages/storage-local`, `storage-s3`, `index-sqlite`, `index-postgres`, `embeddings-openai`, `tools`, `cli`
+- `examples/quickstart-anthropic`, `examples/quickstart-openai`
+- `.github/workflows/ci.yml`, `release.yml` ; `tsconfig.base.json`, `turbo.json`
 
-- **Runtime** : Node.js 20+
-- **Package Manager** : pnpm 9+
-- **Monorepo** : Turborepo
-- **Build** : tsup (dual ESM + CJS + .d.ts)
-- **Tests** : Vitest (+ testcontainers pour Postgres en v0.1)
-- **Release** : Changesets + GitHub Actions → publication npm
-- **Lint** : ESLint flat-adjacent + Prettier
+## Règles absolues
 
-## Règles de code
+- TypeScript : options strictes de `tsconfig.base.json` ; pas de `any` ; `@ts-ignore` / `@ts-expect-error` interdits sauf commentaire + ticket ; exports publics typés + TSdoc.
+- Code livré complet ; Zéro `console.log` — CLI : `process.stderr.write` / `process.stdout.write` ; pas de secrets en clair ; promesses et erreurs toujours gérées.
+- `@mnem/core` : seuils couverture Vitest obligatoires en CI (voir config package).
+- Commits Conventional `type(scope): description` (< 72 car.), atomiques — types et scopes : `docs/agents/code-rules.md`.
+- Git : pas de push direct sur `main`/`dev`, pas de `git push --force` sur ces branches, pas de `gh pr merge --squash` ni `--rebase` ; merge commit `gh pr merge --merge`.
+- **Demander confirmation** avant : `main`, suppressions non triviales, bump majeur deps, format vault, API publique `@mnem/core`, publication npm (`docs/agents/confirmations.md`).
 
-### TypeScript
+## Commandes
 
-- `strict: true` avec `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noFallthroughCasesInSwitch`.
-- Zero `any` (utiliser `unknown` + type guards). `@ts-ignore` / `@ts-expect-error` interdits sauf commentaire + ticket.
-- Exports publics : typés explicitement, surface API stable, TSdoc sur chaque export.
-
-### Général
-
-- Code complet, pas de `...` / `// TODO` / `// reste du code` dans un fichier livré.
-- Zéro `console.log` — utiliser `process.stderr.write` / `process.stdout.write` dans la CLI, ou les hooks du consommateur.
-- Pas de secrets en clair dans les tests ou les exemples.
-- Gestion d'erreurs exhaustive : jamais de promesse sans gestion, jamais d'erreur avalée.
-- DRY / KISS / YAGNI / SOLID avec jugeote — pas d'abstraction prématurée.
-
-### Tests
-
-- **100 % coverage obligatoire sur `@mnem/core`** (bloqué en CI via seuils Vitest).
-- Tests d'intégration pour les adapters (fs réel pour `storage-local`, testcontainers pour `index-postgres`).
-- Pas de tests E2E payants en CI (mocks pour OpenAI, tests réels uniquement en pre-release).
-
-### Commits
-
-- Conventional Commits : `type(scope): description` (< 72 chars).
-- Commits atomiques : 1 commit = 1 modification logique.
-- Types : `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `chore`, `build`, `ci`, `style`.
-- Scopes valides : `core`, `storage-local`, `storage-s3`, `index-sqlite`, `index-postgres`, `embeddings-openai`, `tools`, `cli`, `config`, `ci`, `deps`, `docs`, `examples`.
-
-## Git Workflow
-
-### Branches protégées
-
-- `main` : protégée, PR obligatoire. Toute release part de `main`.
-- `dev` : intégration, PR obligatoire.
-
-### Commandes interdites
-
-- `git push origin main` ou `git push origin dev` en direct.
-- `git push --force` sur `main` ou `dev`.
-- `gh pr merge --squash` ou `--rebase` (on merge avec merge commit pour préserver l'historique).
-
-### Workflow standard
-
-1. `git fetch origin && git checkout dev && git pull origin dev`
-2. `git checkout -b type/description` (ex: `feat/core-semantic-search`)
-3. Commits atomiques conventionnels.
-4. Checks locaux avant push :
-   ```bash
-   pnpm prettier --write .
-   pnpm lint
-   pnpm typecheck
-   pnpm test
-   pnpm build
-   ```
-5. `git push origin type/description`
-6. `gh pr create --base dev --title "type(scope): description"`
-7. Attendre CI au vert.
-8. `gh pr merge --merge --delete-branch --admin`
-9. Promotion `dev → main` via PR dédiée (`chore: release to main`).
-
-## Release
-
-Releases via Changesets :
+Install et checks (séquence `.github/workflows/ci.yml`) :
 
 ```bash
-pnpm changeset                # créer un changeset pour les packages impactés
-# commit + PR
-pnpm changeset version        # applique les bumps en local (utilisé par la release action)
-pnpm release                  # build + publish npm
+pnpm install --frozen-lockfile
+pnpm prettier
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm test
 ```
 
-La release sur npm est déclenchée par un push sur `main` avec un changeset présent (GitHub Action `release.yml`).
+Format local : `pnpm prettier:fix`. Release : `pnpm changeset`, `pnpm changeset version`, `pnpm release` (npm via `release.yml` seulement, après confirmation) — voir `docs/agents/release.md`.
 
-## Confirmations requises
+## Contexte agent
 
-**DEMANDER CONFIRMATION** avant :
+Quand le contexte dépasse 80 %, arrête-toi, résume l'état courant, lance un `/compact`. Ne lis jamais plus de 3 fichiers à la suite sans vérifier le contexte. Exploration large → sub-agent (`docs/agents/context.md`).
 
-- Toute opération sur `main`
-- Suppression de fichiers ou de code non trivial
-- Bump de dépendance majeure
-- Modification du format de vault (breaking change pour les consumers)
-- Modification de la surface d'API publique de `@mnem/core`
-- Publication sur npm
+## Docs détaillées
+
+- `docs/agents/context.md` : gestion du contexte et exploration large.
+- `docs/agents/product.md` : vision, stack détaillée, références documentaires.
+- `docs/agents/code-rules.md` : TypeScript, qualité, tests, conventions de commits.
+- `docs/agents/git-workflow.md` : branches et workflow PR.
+- `docs/agents/release.md` : Changesets et publication npm.
+- `docs/agents/confirmations.md` : confirmations utilisateur avant actions sensibles.
